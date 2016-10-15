@@ -17,3 +17,5 @@ tests/.coverage
 build/
 tests/report/
 .idea
+*.sqlite3
+
