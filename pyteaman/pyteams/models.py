@@ -75,7 +75,7 @@ class Reply(models.Model):
         return self.reply
 
 
-class ModelUpdate(models.Model):
+class UpdateTracker(models.Model):
     available_models = (
         (1, 'Address'),
         (2, 'Verification'),
@@ -85,8 +85,13 @@ class ModelUpdate(models.Model):
         (6, 'Comment'),
         (7, 'Reply')
     )
+    action_choices = (
+        (1, 'create'),
+        (2, 'update'),
+        (3, 'delete')
+    )
     model_name = models.CharField(choices=available_models, max_length=20)
-    remarks = models.TextField()
+    action = models.CharField(choices=action_choices, max_length=6)
     updated_on = models.DateTimeField(auto_now_add=True)
     updated_by = models.ForeignKey(User)
 
