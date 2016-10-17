@@ -5,12 +5,14 @@ from .utils import build_response, get_object_or_None, get_user_on_user_identifi
 from .decorators import is_manager
 
 
-class TeamCreateManager(object):
+class TeamHandler(object):
 
     """
     Class that handles create team and all related functions.
     methods included:
     1. create_team()
+    2. retrieve_team()
+    3. get_team_on_members()
     """
 
     def __init__(self, *args, **kwargs):
@@ -91,6 +93,7 @@ class TeamCreateManager(object):
         else:
             return {'status': 204, 'description': 'No users with the given identifiers exist.'}
         return {'status': 200, 'teams': teams}
+
 
 class CustomException(Exception):
     pass
