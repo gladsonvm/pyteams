@@ -3,13 +3,23 @@ from .permissions import is_admin_or_manager
 from .utils import get_user_on_user_identifier
 
 
+def if_user_exists(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if self.user_identifier is None:
+            self.user_identifier = args[2] if len(args) == 3 else kwargs.get('created_by', None)
+        self.user = get_user_on_user_identifier(user_identifier=self.user_identifier)
+        if self.user:
+            return method(self, *args, **kwargs)
+        return {'status': 404, 'description': 'No user with given user identifier exists.'}
+    return wrapper
+
+
 def is_manager(method):
     @wraps(method)
     def wrapper(self, *args, **kwargs):
-        user_identifier = kwargs.get('user_identifier') if kwargs.get('user_identifier') else args[0]
-        user = get_user_on_user_identifier(user_identifier)
-        if user:
-            if is_admin_or_manager(user):
+        if self.user:
+            if is_admin_or_manager(self.user):
                 return method(self, *args, **kwargs)
             else:
                 return {'status': 403, 'description': 'Only Manager/Admin roles can create team.'}
@@ -17,5 +27,7 @@ def is_manager(method):
             return {'status': 404, 'description': 'No user with given username/email exists.'}
     return wrapper
 
+
 class PermissionException(Exception):
     pass
+
