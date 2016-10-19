@@ -6,6 +6,17 @@ from django.contrib.auth.models import User
 
 
 class Team(models.Model):
+    """
+    Team model.
+    holds following data for a team object:
+    name: name of team.
+    description: team description.
+    created_by: user (object) who created team.
+    created_on: timestamp when the team object is created.
+    updated_on: timestamp of last update done to a team object.
+    members: list of members (auth.models.user objects) who have joined team.
+    team_type = type of team.
+    """
     team_types = (
         ('tech', 'tech'),
         ('management', 'management'),
