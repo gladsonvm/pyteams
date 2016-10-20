@@ -7,15 +7,14 @@ def if_user_exists(method):
     @wraps(method)
     def wrapper(self, *args, **kwargs):
         if self.user_identifier is None:
-            self.user_identifier = args[2] if len(args) == 3 else kwargs.get('created_by', None)
-            if self.user_identifier:
-                self.user = get_user_on_user_identifier(user_identifier=self.user_identifier)
-                if self.user:
-                    return method(self, *args, **kwargs)
+            self.user_identifier = args[2] if len(args) >= 3 else kwargs.get('created_by', None)
+        if self.user_identifier:
+            self.user = get_user_on_user_identifier(user_identifier=self.user_identifier)
+            if self.user:
+                return method(self, *args, **kwargs)
             if method.func_name == 'create_team':
                 return {'status': 400, 'description': 'Provide parameters in the format {0}, {1}, {2}, {3}.'
                         .format('team_name', 'team_description', 'user_identifier', 'team_type')}
-
         return {'status': 404, 'description': 'No user with given user identifier exists.'}
     return wrapper
 

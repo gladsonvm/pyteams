@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 def is_admin_or_manager(user):
     """
     Check if a user belong to either manager or administrator group
