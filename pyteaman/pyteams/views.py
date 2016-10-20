@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from .utils import update_tracker, get_object_or_None, get_user_on_user_identifier
 from .decorators import is_manager, if_user_exists
-
+from django.db import transaction
 
 class TeamHandler(object):
 
@@ -41,9 +41,11 @@ class TeamHandler(object):
         if self.user and self.team_name and self.team_type and self.description:
             existing_teams = Team.objects.filter(name=self.team_name, team_type=self.team_type).count()
             if not existing_teams:
-                team = Team.objects.create(name=self.team_name, team_type=self.team_type, created_by=self.user)
-                update_tracker(team)
-                return {'status': 200, 'team': team}
+                with transaction.atomic():
+                    team = Team.objects.create(name=self.team_name, team_type=self.team_type, created_by=self.user)
+                    update_tracker(team)
+                    return {'status': 200, 'team': team}
+                return {'status': 500, 'description': 'save failed.'}
             else:
                 return {'status': 409, 'description': 'A team with that name already exists.'}
         return {'status': 400, 'description': 'No user with that username/email eists.'}
