@@ -39,7 +39,27 @@ class Team(models.Model):
         permissions = (("edit_members", "Can add or remove members"),)
 
 
+class Task(models.Model):
+    """
+    This model saves all info of tasks that are assigned within members of a team.
+    """
+    team = models.ForeignKey(Team)
+    assignor = models.ForeignKey(User, related_name='assignor')
+    assignee = models.ForeignKey(User, related_name='assignee')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    created_by = models.ForeignKey(User)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_created=True)
+
+    def __unicode__(self):
+        return self.title
+
+
 class Activity(models.Model):
+    """
+    Activity model saves activities involving multiple teams. A typical example is a release event.
+    """
     priorities = (
         (1, 'high'),
         (2, 'medium'),
@@ -57,7 +77,7 @@ class Activity(models.Model):
     created_by = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_created=True)
-    team = models.ForeignKey(Team)
+    team = models.ManyToManyField(Team)
     priority = models.CharField(choices=priorities, max_length=6)
     status = models.CharField(choices=status_choices, max_length=10)
 
@@ -107,7 +127,8 @@ class UpdateTracker(models.Model):
     model_id = models.IntegerField()
     action = models.CharField(choices=action_choices, max_length=10)
     updated_on = models.DateTimeField(auto_now_add=True)
+    remarks = models.TextField(null=Team, blank=True)
     updated_by = models.ForeignKey(User)
 
     def __unicode__(self):
-        return self.model_name
+        return self.model_name + self.model_id

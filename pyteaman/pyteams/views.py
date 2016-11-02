@@ -28,7 +28,7 @@ class TeamHandler(object):
         self.description = args[1] if len(args) >= 2 else kwargs.get('description', None)
         self.team_type = args[2] if len(args) >= 3 else kwargs.get('team_type', None)
         self.user = args[3] if len(args) == 4 else kwargs.get('user', None)
-        self.permission_flag = kwargs.get('permission_flag', None)
+        self.permission_bypass_flag = kwargs.get('permission_flag', None)
 
     @permission_bypass
     def create_team(self):

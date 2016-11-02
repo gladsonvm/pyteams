@@ -8,8 +8,8 @@ def permission_bypass(method, *args, **kwargs):
     :param method: method that is passed as an input to this decorator
     :param args: class variables in the order (team_name, team_type, created_by, description).
     :param kwargs: optional arguments. Accepted names are same as name of args.
-    :return: method if user or group have proper permissions else Exceptions are raised.
-    If args/kwargs are not passed in predefined order a dict is returned with error code 400 and proper description.
+    :return: method if user or group have proper permissions else Exceptions are raised. If args/kwargs
+    are not passed in predefined order, then a dict is returned with error code 400 and proper description.
     """
     @wraps(method, *args, **kwargs)
     def wrapper(self, *args, **kwargs):
