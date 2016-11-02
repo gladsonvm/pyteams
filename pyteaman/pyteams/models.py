@@ -36,6 +36,7 @@ class Team(models.Model):
 
     class Meta:
         unique_together = ('name', 'team_type',)
+        permissions = (("edit_members", "Can add or remove members"),)
 
 
 class Activity(models.Model):
@@ -103,6 +104,7 @@ class UpdateTracker(models.Model):
         ('update', 'delete'),
     )
     model_name = models.CharField(choices=available_models, max_length=8)
+    model_id = models.IntegerField()
     action = models.CharField(choices=action_choices, max_length=10)
     updated_on = models.DateTimeField(auto_now_add=True)
     updated_by = models.ForeignKey(User)

@@ -38,6 +38,7 @@ def update_tracker(model_instance, action=None):
     if type(model_instance).__name__ == 'Team':
         update_dict = {
             'model_name': 'team',
+            'model_id': model_instance.id,
             'action': 'create' if action == 'create' else 'update',
             'updated_on': datetime.datetime.now(),
             'updated_by': model_instance.created_by
@@ -47,5 +48,6 @@ def update_tracker(model_instance, action=None):
             return True
         except:
             return False
+
 
 

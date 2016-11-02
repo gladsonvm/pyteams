@@ -1,37 +1,44 @@
 from functools import wraps
-from .permissions import is_admin_or_manager
-from .utils import get_user_on_user_identifier
 
 
-def if_user_exists(method):
-    @wraps(method)
+def permission_bypass(method, *args, **kwargs):
+    """
+    This method is used as a decorator to check if user/group have proper permissions to create a Team object.
+    self.__init__() is called to assign values to class variables at once.
+    :param method: method that is passed as an input to this decorator
+    :param args: class variables in the order (team_name, team_type, created_by, description).
+    :param kwargs: optional arguments. Accepted names are same as name of args.
+    :return: method if user or group have proper permissions else Exceptions are raised.
+    If args/kwargs are not passed in predefined order a dict is returned with error code 400 and proper description.
+    """
+    @wraps(method, *args, **kwargs)
     def wrapper(self, *args, **kwargs):
-        if self.user_identifier is None:
-            self.user_identifier = args[2] if len(args) >= 3 else kwargs.get('created_by', None)
-        if self.user_identifier:
-            self.user = get_user_on_user_identifier(user_identifier=self.user_identifier)
-            if self.user:
+        self.__init__(*args, **kwargs)
+        if hasattr(self, 'user') and self.user is not None:
+            self.permission_bypass_flag = kwargs.get('permission_bypass_flag', None)
+            if self.permission_bypass_flag == 'group' or self.permission_bypass_flag is None:
+                if self.user.has_perm('pyteams.add_team'):
+                    return method(self, *args, **kwargs)
+                raise PermissionException('Assign Permission pyteams.add_team to User object that corresponds to '
+                                          'current user. Use admin interface to assign permissions.')
+            if self.permission_bypass_flag == 'user':
+                try:
+                    group = self.user.groups.get(name='manager')
+                    group.permissions.get(codename='add_team')
+                    return method(self, *args, **kwargs)
+                except:
+                    raise PermissionException('create manager group and assign permission add_team. '
+                                              'Use admin interface to assign permissions.')
+            if self.permission_bypass_flag is True:
                 return method(self, *args, **kwargs)
-            if method.func_name == 'create_team':
-                return {'status': 400, 'description': 'Provide parameters in the format {0}, {1}, {2}, {3}.'
-                        .format('team_name', 'team_description', 'user_identifier', 'team_type')}
-        return {'status': 404, 'description': 'No user with given user identifier exists.'}
-    return wrapper
-
-
-def is_manager(method):
-    @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        if self.user:
-            if is_admin_or_manager(self.user):
-                return method(self, *args, **kwargs)
-            else:
-                return {'status': 403, 'description': 'Only Manager/Admin roles can create team.'}
-        else:
-            return {'status': 404, 'description': 'No user with given username/email exists.'}
+        return {'status': 400, 'description': 'Provide parameters in the order {},{},{},{}'
+                .format('team_name', 'team_type', 'created_by', 'description')}
     return wrapper
 
 
 class PermissionException(Exception):
     pass
 
+
+class TypeException(Exception):
+    pass

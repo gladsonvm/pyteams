@@ -2,8 +2,9 @@ from .models import Team
 from django.contrib.auth.models import User
 from django.db.models import Q
 from .utils import update_tracker, get_object_or_None, get_user_on_user_identifier
-from .decorators import is_manager, if_user_exists
+from .decorators import permission_bypass
 from django.db import transaction
+
 
 class TeamHandler(object):
 
@@ -25,30 +26,35 @@ class TeamHandler(object):
         """
         self.team_name = args[0] if len(args) else kwargs.get('name', None)
         self.description = args[1] if len(args) >= 2 else kwargs.get('description', None)
-        self.user_identifier = args[2] if len(args) >= 3 else kwargs.get('created_by', None)
-        self.team_type = args[3] if len(args) == 4 else kwargs.get('team_type', None)
+        self.team_type = args[2] if len(args) >= 3 else kwargs.get('team_type', None)
+        self.user = args[3] if len(args) == 4 else kwargs.get('user', None)
+        self.permission_flag = kwargs.get('permission_flag', None)
 
-    @if_user_exists
-    @is_manager
-    def create_team(self, *args, **kwargs):
+    @permission_bypass
+    def create_team(self):
         """
         This method creates a new team. if user corresponding to a given user identifier exists, and
         no team exists with a given name. Use this method with decorators only that fetching user object and
         checking permission in implemented in decorators.
         :return: Team name and status variable as json
         """
-        self.__init__(*args, **kwargs)
         if self.user and self.team_name and self.team_type and self.description:
             existing_teams = Team.objects.filter(name=self.team_name, team_type=self.team_type).count()
             if not existing_teams:
                 with transaction.atomic():
-                    team = Team.objects.create(name=self.team_name, team_type=self.team_type, created_by=self.user)
-                    update_tracker(team)
+                    team = Team.objects.create(name=self.team_name,
+                                               team_type=self.team_type,
+                                               created_by=self.user,
+                                               description=self.description)
+                    update_status = update_tracker(team)
+                if update_status:
                     return {'status': 200, 'team': team}
-                return {'status': 500, 'description': 'save failed.'}
+                return {'status': 500, 'description': 'Database operation failed.'}
+
             else:
                 return {'status': 409, 'description': 'A team with that name already exists.'}
-        return {'status': 400, 'description': 'No user with that username/email eists.'}
+        return {'status': 400, 'description': 'Provide parameters in the order {},{},{},{}'
+                .format('team_name', 'team_type', 'created_by', 'description')}
 
     def retrieve_team(self, username=None, **kwargs):
         """
