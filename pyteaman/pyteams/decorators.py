@@ -13,6 +13,8 @@ def permission_bypass(method, *args, **kwargs):
     """
     @wraps(method, *args, **kwargs)
     def wrapper(self, *args, **kwargs):
+        if self.permission_bypass_flag is True:
+            return method(self, *args, **kwargs)
         self.__init__(*args, **kwargs)
         if hasattr(self, 'user') and self.user is not None:
             self.permission_bypass_flag = kwargs.get('permission_bypass_flag', None)
@@ -29,10 +31,8 @@ def permission_bypass(method, *args, **kwargs):
                 except:
                     raise PermissionException('create manager group and assign permission add_team. '
                                               'Use admin interface to assign permissions.')
-            if self.permission_bypass_flag is True:
-                return method(self, *args, **kwargs)
-        return {'status': 400, 'description': 'Provide parameters in the order {},{},{},{}'
-                .format('team_name', 'team_type', 'created_by', 'description')}
+        return {'status': 400, 'description': 'User object is mandatory for create_team() '
+                                              'unless permission_bypass_flag is set to True'}
     return wrapper
 
 
