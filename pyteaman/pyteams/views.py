@@ -1,7 +1,7 @@
 from .models import Team
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .utils import update_tracker, get_object_or_None, get_user_on_user_identifier
+from .utils import update_tracker, get_object_or_None, set_class_attrs
 from .decorators import permission_bypass
 from django.db import transaction
 
@@ -25,11 +25,11 @@ class TeamHandler(object):
         currently it is either username or email
         """
         self.team_name = args[0] if len(args) else kwargs.get('name', None)
-        self.description = args[1] if len(args) >= 2 else kwargs.get('description', None)
-        self.team_type = args[2] if len(args) >= 3 else kwargs.get('team_type', None)
-        self.user = args[3] if len(args) == 4 else kwargs.get('user', None)
+        self.team_type = args[1] if len(args) >= 2 else kwargs.get('team_type', None)
+        self.user = args[2] if len(args) >= 3 else kwargs.get('user', None)
+        self.description = args[3] if len(args) == 4 else kwargs.get('description', None)
         self.permission_bypass_flag = kwargs.get('permission_flag', None)
-
+    @set_class_attrs
     @permission_bypass
     def create_team(self):
         """
@@ -56,7 +56,8 @@ class TeamHandler(object):
         return {'status': 400, 'description': 'Provide parameters in the order {},{},{},{}'
                 .format('team_name', 'team_type', 'created_by', 'description')}
 
-    def retrieve_team(self, username=None, **kwargs):
+    @permission_bypass
+    def retrieve_team(self, *args, **kwargs):
         """
         Get all details of team. Accepts a list of username/email as args.
         list can contain either username or email
@@ -64,7 +65,7 @@ class TeamHandler(object):
         to items in the list will be returned
         :return: team object
         """
-        if username:
+        if self.user:
             user_identifier = username.strip(' ')
             if len(user_identifier) and kwargs.get('members', None):
                 return self.get_team_on_members(kwargs['members'], user_identifier)
@@ -74,7 +75,7 @@ class TeamHandler(object):
                     return {'status': 200, 'teams': teams}
                 else:
                     return {'status': 204, 'description': 'No team exists with creator as given user identifier.'}
-        if kwargs['members']:
+        if kwargs.get('members'):
             return self.get_team_on_members(kwargs['members'])
 
     def get_team_on_members(self, members, user_identifier=None):

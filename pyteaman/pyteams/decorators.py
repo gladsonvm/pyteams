@@ -1,4 +1,6 @@
 from functools import wraps
+from django.contrib.auth.models import User
+from .utils import set_class_attrs
 
 
 def permission_bypass(method, *args, **kwargs):
@@ -15,24 +17,24 @@ def permission_bypass(method, *args, **kwargs):
     def wrapper(self, *args, **kwargs):
         if self.permission_bypass_flag is True:
             return method(self, *args, **kwargs)
-        self.__init__(*args, **kwargs)
         if hasattr(self, 'user') and self.user is not None:
             self.permission_bypass_flag = kwargs.get('permission_bypass_flag', None)
             if self.permission_bypass_flag == 'group' or self.permission_bypass_flag is None:
                 if self.user.has_perm('pyteams.add_team'):
-                    return method(self, *args, **kwargs)
+                    return method(self)
                 raise PermissionException('Assign Permission pyteams.add_team to User object that corresponds to '
                                           'current user. Use admin interface to assign permissions.')
             if self.permission_bypass_flag == 'user':
                 try:
                     group = self.user.groups.get(name='manager')
                     group.permissions.get(codename='add_team')
-                    return method(self, *args, **kwargs)
+                    return method(self)
                 except:
                     raise PermissionException('create manager group and assign permission add_team. '
                                               'Use admin interface to assign permissions.')
-        return {'status': 400, 'description': 'User object is mandatory for create_team() '
-                                              'unless permission_bypass_flag is set to True'}
+            return {'status': 400, 'description': 'User object is mandatory for create_team()'
+                                                  ' unless permission_bypass_flag is set to True'}
+        return {'status': 400, 'description': 'user identifier must be an object of type User'}
     return wrapper
 
 
