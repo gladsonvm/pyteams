@@ -1,8 +1,8 @@
 from .models import Team
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .utils import update_tracker, get_object_or_None, set_class_attrs
-from .decorators import permission_bypass
+from .utils import update_tracker, get_object_or_None
+from .decorators import permission_bypass, set_class_attrs
 from django.db import transaction
 
 

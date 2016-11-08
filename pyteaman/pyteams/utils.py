@@ -1,6 +1,7 @@
 from django.shortcuts import _get_queryset
 from django.contrib.auth.models import User
 from .models import UpdateTracker
+from .models import Team
 import datetime
 
 
@@ -17,16 +18,6 @@ def get_object_or_None(klass, *args, **kwargs):
         return queryset.get(*args, **kwargs)
     except queryset.model.DoesNotExist:
         return None
-
-
-def get_user_on_user_identifier(user_identifier):
-    if len(user_identifier.strip(' ')):
-        user = get_object_or_None(User, username=user_identifier)
-        if user is None:
-            user = get_object_or_None(User, email=user_identifier)
-        if user:
-            return user
-    return None
 
 
 def update_tracker(model_instance, action=None):
@@ -50,4 +41,49 @@ def update_tracker(model_instance, action=None):
             return False
 
 
-
+def validate_arguments(func_name, *args, **kwargs):
+    """
+    This method validates args/kwargs passed on to Teamhandler methods.
+    :param func_name: name of any method defined in TeamHandler class
+    :param args: arguments
+    :param kwargs: optional/keyword arguments
+    :return: True if validation test passes else False
+    """
+    if func_name == 'create_team':
+        # validation for TeamHandler.create_team()
+        team_types = Team.team_types
+        mandatory_args = ['team_name', 'team_type', 'created_by', 'description']
+        if len(args) == 4:
+            if isinstance(args[0], str) and isinstance(args[1], str) and isinstance(args[2], User) and \
+                    isinstance(args[3], str):
+                if args[1] in [str(x[0]) for x in team_types]:
+                    args_from = 'args'
+                    return True, args_from
+                return False
+            return False
+        elif bool(kwargs) and kwargs.keys() == mandatory_args:
+            if isinstance(kwargs.get('created_by', None), User) and isinstance(kwargs.get('team_name',None), str) and \
+                    isinstance(kwargs.get('team_type', None), str) and isinstance(kwargs.get('description', None), str):
+                args_from = 'kwargs'
+                return True, args_from
+        return False
+    if func_name == 'retrieve_team':
+        # validation for TeamHandler.retrieve_team()
+        mandatory_args = 'user'
+        if len(args) == 1 or len(args) == 2:
+            if isinstance(args[0], User):
+                args_from = 'args'
+                if len(args) == 2:
+                    if isinstance(args[1], list):
+                        return True, args_from
+                    return False
+                return True, args_from
+            return False
+        if bool(kwargs) and mandatory_args in kwargs.keys():
+            if isinstance(kwargs.get('user', None), str):
+                if 'members' in kwargs.keys():
+                    if isinstance(kwargs.get('members', None), list):
+                        return True
+                    return False
+                return True
+        return False

@@ -1,6 +1,29 @@
 from functools import wraps
-from django.contrib.auth.models import User
-from .utils import set_class_attrs
+from .utils import validate_arguments
+
+
+def set_class_attrs(method, *args, **kwargs):
+    @wraps(method, *args, **kwargs)
+    def wrapper(self, *args, **kwargs):
+        if method.func_name == 'create_team':
+            is_valid = validate_arguments(method.func_name, *args, **kwargs)
+            if isinstance(is_valid, tuple):
+                self.team_name = args[0] if is_valid[1] == 'args' else kwargs.get('team_name')
+                self.team_type = args[1] if is_valid[1] == 'args' else kwargs.get('team_type')
+                self.user = args[2] if is_valid[1] == 'args' else kwargs.get('team_type')
+                self.description = args[3] if is_valid[1] == 'args' else kwargs.get('description')
+            else:
+                return {'status': 400, 'description': 'Validation Failed. Provide parameters in the order '
+                        '({}, {}, {}, {})'.format('team_name', 'team_type', 'created_by', 'description')}
+        if method.func_name == 'retrieve_team':
+            is_valid = validate_arguments(method.func_name, *args, **kwargs)
+            if isinstance(is_valid, tuple):
+                self.user = args[0] if len(args) else kwargs.get('user')
+                self.members = args[1] if len(args) == 2 else kwargs.get('members')
+            else:
+                return {'status': 400, 'description': 'Validation Failed. Provide parameters in the order '
+                        '({}, {})'.format('user', '[members]')}
+    return wrapper
 
 
 def permission_bypass(method, *args, **kwargs):
