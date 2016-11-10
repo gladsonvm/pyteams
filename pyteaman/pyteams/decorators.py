@@ -3,6 +3,13 @@ from .utils import validate_arguments
 
 
 def set_class_attrs(method, *args, **kwargs):
+    """
+    This method set attributes to TeamHandler class
+    :param method: method of TeanHandler class
+    :param args: args required to trigger method
+    :param kwargs: optional args
+    :return: method if attributes are set successfully else error as Json message.
+    """
     @wraps(method, *args, **kwargs)
     def wrapper(self, *args, **kwargs):
         if method.func_name == 'create_team':
