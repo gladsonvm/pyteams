@@ -29,6 +29,7 @@ class TeamHandler(object):
         self.user = args[2] if len(args) >= 3 else kwargs.get('user', None)
         self.description = args[3] if len(args) == 4 else kwargs.get('description', None)
         self.permission_bypass_flag = kwargs.get('permission_flag', None)
+
     @set_class_attrs
     @permission_bypass
     def create_team(self):
@@ -56,54 +57,24 @@ class TeamHandler(object):
         return {'status': 400, 'description': 'Provide parameters in the order {},{},{},{}'
                 .format('team_name', 'team_type', 'created_by', 'description')}
 
+    @set_class_attrs
     @permission_bypass
     def retrieve_team(self, *args, **kwargs):
         """
-        Get all details of team. Accepts a list of username/email as args.
-        list can contain either username or email
-        If multiple items are found in list, only those teams having all users corresponding
-        to items in the list will be returned
+        Get all details of a team provided self.user or self.members.if only argument is self.user
+        then all teams created by self.user is returned. If members is the only argument, then all teams
+        having self.user as a member is returned. If queryset is empty, then proper error message is returned.
         :return: team object
         """
+        if self.user and self.members:
+            teams = Team.objects.filter(Q(created_by=self.user) | Q(members__in=self.members))
         if self.user:
-            user_identifier = username.strip(' ')
-            if len(user_identifier) and kwargs.get('members', None):
-                return self.get_team_on_members(kwargs['members'], user_identifier)
-            if len(user_identifier):
-                teams = Team.objects.filter(Q(created_by__username=user_identifier) | Q(created_by__email=user_identifier))
-                if len(teams):
-                    return {'status': 200, 'teams': teams}
-                else:
-                    return {'status': 204, 'description': 'No team exists with creator as given user identifier.'}
-        if kwargs.get('members'):
-            return self.get_team_on_members(kwargs['members'])
-
-    def get_team_on_members(self, members, user_identifier=None):
-        """
-        return queryset of team model if members in members or user_identifier
-        in created_by__username or created_by__email of Team model.
-        :param members: a list of username or email that corresponds to user objects
-        :param user_identifier: a string that corresponds to username or email field of User model
-        :return: Queryset of team if match is found. else json with error code and description
-        """
-        user_list = []
-        if len(members):
-            for member in members:
-                user = get_object_or_None(User, username=member)
-                if user is None:
-                    user = get_object_or_None(User, email=member)
-                if user:
-                    user_list.append(user)
-        if user_identifier and len(user_list):
-            teams = Team.objects.filter(
-                Q(created_by__username=user_identifier) | Q(created_by__email=user_identifier) &
-                Q(members__in=user_list)
-            )
-        if len(user_list):
-            teams = Team.objects.filter(members__in=user_list)
-        else:
-            return {'status': 204, 'description': 'No users with the given identifiers exist.'}
-        return {'status': 200, 'teams': teams}
+            teams = Team.objects.filter(created_by=self.user)
+        if self.members:
+            teams = Team.objects.filter(members__in=self.members)
+        if teams:
+            return {'status': 200, 'teams': teams}
+        return {'status': 204, 'description': 'No teams with creator/members matching with args/kwargs found'}
 
 
 class CustomException(Exception):
