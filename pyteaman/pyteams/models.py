@@ -36,7 +36,9 @@ class Team(models.Model):
 
     class Meta:
         unique_together = ('name', 'team_type',)
-        permissions = (("edit_members", "Can add or remove members"), ("retrieve_team", "retrieve team details"))
+        permissions = (("add_members", "Can add members"),
+                       ("retrieve_team", "retrieve team details"),
+                       ("remove_members", "can remove members"))
 
 
 class Task(models.Model):
