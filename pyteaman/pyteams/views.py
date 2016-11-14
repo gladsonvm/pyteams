@@ -66,15 +66,24 @@ class TeamHandler(object):
         having self.user as a member is returned. If queryset is empty, then proper error message is returned.
         :return: team object
         """
+        if self.user and self.members and self.team_name:
+            teams = Team.objects.filter(Q(created_by=self.user) & Q(members__in=self.members) &
+                                        Q(team_name=self.team_name))
         if self.user and self.members:
             teams = Team.objects.filter(Q(created_by=self.user) | Q(members__in=self.members))
+        if self.user and self.team_name:
+            teams = Team.objects.filter(Q(team_name=self.team_name) & Q(created_by=self.user))
+        if self.members and self.team_name:
+            teams = Team.objects.filter(Q(team_name=self.team_name) & Q(members__in=self.members))
         if self.user:
             teams = Team.objects.filter(created_by=self.user)
         if self.members:
             teams = Team.objects.filter(members__in=self.members)
+
         if teams:
             return {'status': 200, 'teams': teams}
-        return {'status': 204, 'description': 'No teams with creator/members matching with args/kwargs found'}
+        else:
+            return {'status': 204, 'description': 'No teams with creator/members matching with args/kwargs found'}
 
 
 class CustomException(Exception):
