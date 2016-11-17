@@ -85,6 +85,13 @@ class TeamHandler(object):
         else:
             return {'status': 204, 'description': 'No teams with creator/members matching with args/kwargs found'}
 
+    @set_class_attrs
+    @permission_bypass
+    def update_team(self):
+        """
+        This method checks for an existing team object and update the same with arguments provided.
+        :return: team if updates else error with appropriate status code.
+        """
 
 class CustomException(Exception):
     pass

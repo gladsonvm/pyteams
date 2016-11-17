@@ -79,7 +79,7 @@ def validate_arguments(func_name, *args, **kwargs):
                     return False
                 return True, args_from
             return False
-        if bool(kwargs) and mandatory_args in kwargs.keys():
+        elif bool(kwargs) and mandatory_args in kwargs.keys():
             if isinstance(kwargs.get('user', None), str):
                 if 'members' in kwargs.keys():
                     if isinstance(kwargs.get('members', None), list):
@@ -87,3 +87,27 @@ def validate_arguments(func_name, *args, **kwargs):
                     return False
                 return True
         return False
+    if func_name == 'update_team':
+        # validation for  TeamHandler.update_team()
+        mandatory_args = ['team_name', 'created_by', 'member']
+        if len(args) >= 3:
+            if isinstance(args[0],str) and isinstance(args[1], User) and isinstance(args[2], list):
+                if len(args) == 6:
+                    if isinstance(args[5], list) and isinstance(args[4], User) and isinstance(args[3], str):
+                        return True
+                    return False
+                elif len(args) == 5:
+                    if isinstance(args[4], User) and isinstance(args[3], str):
+                        return True
+                    return False
+                elif len(args) == 4:
+                    if isinstance(args[3], str):
+                        return True
+                    return False
+            return False
+        elif bool(kwargs) and mandatory_args in kwargs.keys():
+            pass
+
+
+
+
