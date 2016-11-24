@@ -89,7 +89,7 @@ def validate_arguments(func_name, *args, **kwargs):
         return False
     if func_name == 'update_team':
         # validation for  TeamHandler.update_team()
-        mandatory_args = ['team_name', 'created_by', 'member']
+        mandatory_args = ['team_name', 'created_by', 'members']
         if len(args) >= 3:
             if isinstance(args[0],str) and isinstance(args[1], User) and isinstance(args[2], list):
                 if len(args) == 6:
@@ -106,7 +106,24 @@ def validate_arguments(func_name, *args, **kwargs):
                     return False
             return False
         elif bool(kwargs) and mandatory_args in kwargs.keys():
-            pass
+            if isinstance(kwargs.get('team_name', None), str) and isinstance(kwargs.get('created_by', None), User) and\
+                    isinstance(kwargs.get('members', None), list):
+                    if kwargs.get('description', None):
+                        if isinstance('description', str):
+                            pass
+                        else:
+                            return False
+                    if kwargs.get('team_type', None):
+                        if isinstance('team_type', str):
+                            pass
+                        else:
+                            return False
+                    return True
+            return False
+
+
+
+
 
 
 
