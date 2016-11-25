@@ -68,8 +68,7 @@ class TeamHandler(object):
         """
 
         if self.user and self.members and self.team_name:
-            teams = Team.objects.filter(Q(created_by=self.user) & Q(members__in=self.members) &
-                                        Q(team_name=self.team_name))
+            teams = Team.objects.filter(created_by=self.user, members__in=self.members, team_name=self.team_name)
         if self.user and self.members:
             teams = Team.objects.filter(created_by=self.user, members__in=self.members)
         if (self.user and self.team_name) or self.team_name:
