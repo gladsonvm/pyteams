@@ -25,8 +25,9 @@ def set_class_attrs(method, *args, **kwargs):
         if method.func_name == 'retrieve_team':
             is_valid = validate_arguments(method.func_name, *args, **kwargs)
             if isinstance(is_valid, tuple):
-                self.user = args[0] if len(args) else kwargs.get('user')
-                self.members = args[1] if len(args) == 2 else kwargs.get('members')
+                self.user = args[0] if len(args) else kwargs.get('user', None)
+                self.members = args[1] if len(args) >= 2 else kwargs.get('members', None)
+                self.team_name = args[2] if len(args) == 3 else kwargs.get('team_name', None)
             else:
                 return {'status': 400, 'description': 'Validation Failed. Provide parameters in the order '
                         '({}, {})'.format('user', '[members]')}

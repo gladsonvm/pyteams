@@ -69,29 +69,42 @@ def validate_arguments(func_name, *args, **kwargs):
         return False
     if func_name == 'retrieve_team':
         # validation for TeamHandler.retrieve_team()
-        mandatory_args = 'user'
-        if len(args) == 1 or len(args) == 2:
-            if isinstance(args[0], User):
-                args_from = 'args'
-                if len(args) == 2:
-                    if isinstance(args[1], list):
-                        return True, args_from
+        if len(args) and len(args) <= 3:
+            if isinstance(args[0], User) or isinstance(args[0], str) or isinstance(args[0], list):
+                if len(args) == 1:
+                    return args[0]
+                arg_0_type = type(args[0]).__name__
+                if isinstance(args[1], User) or isinstance(args[1], str) or isinstance(args[1], list):
+                    if type(args[1]).__name__ != arg_0_type:
+                        if len(args) == 2:
+                            return args[0], args[1]
+                        arg_1_type = type(args[1]).__name__
+                        if isinstance(args[2], User) or isinstance(args[2], str) or isinstance(args[2], list):
+                            type_list = [arg_0_type, arg_1_type]
+                            if type(args[2]).__name__ not in type_list:
+                                return args[0], args[1], args[2]
+                            return False
+                        return False
                     return False
-                return True, args_from
+                return False
             return False
-        elif bool(kwargs) and mandatory_args in kwargs.keys():
-            if isinstance(kwargs.get('user', None), str):
-                if 'members' in kwargs.keys():
-                    if isinstance(kwargs.get('members', None), list):
-                        return True
-                    return False
-                return True
+        elif bool(kwargs):
+            if len(kwargs.keys()) <= 3:
+                if not isinstance(kwargs.get('user', None), User):
+                    kwargs.pop('user')
+                if not isinstance(kwargs.get('team_name', None), str):
+                    kwargs.pop('team_name')
+                if not isinstance(kwargs.get('members', None), list):
+                    kwargs.pop('members')
+                if bool(kwargs):
+                    return kwargs
+            return False
         return False
     if func_name == 'update_team':
         # validation for  TeamHandler.update_team()
         mandatory_args = ['team_name', 'created_by', 'members']
         if len(args) >= 3:
-            if isinstance(args[0],str) and isinstance(args[1], User) and isinstance(args[2], list):
+            if isinstance(args[0], str) and isinstance(args[1], User) and isinstance(args[2], list):
                 if len(args) == 6:
                     if isinstance(args[5], list) and isinstance(args[4], User) and isinstance(args[3], str):
                         return True
@@ -120,6 +133,7 @@ def validate_arguments(func_name, *args, **kwargs):
                             return False
                     return True
             return False
+        return False
 
 
 
