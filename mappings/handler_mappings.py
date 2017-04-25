@@ -1,6 +1,6 @@
-from pyteaman.pyteams.models.Team import team_types
 from django.contrib.auth.models import User
 from datetime import datetime
+from pyteams.models import Team
 
 mappings = {
     {
@@ -17,4 +17,8 @@ mappings = {
 
             }
     }
+}
+
+handler_model_mappings = {
+    'team': Team
 }
