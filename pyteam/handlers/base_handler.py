@@ -1,6 +1,7 @@
-from validators.validator import Validator
 import inspect
-from mappings.handler_mappings import handler_model_mappings
+
+from pyteam.mappings.handler_mappings import handler_model_mappings
+from pyteam.validators.validator import Validator
 
 
 class BaseHandler(object):

@@ -113,29 +113,3 @@ class Reply(models.Model):
     def __unicode__(self):
         return self.reply
 
-
-class UpdateTracker(models.Model):
-    """
-    This model tracks each and every updates that is done to a table.
-    An object of UpdateTracker is created whenever any model is created or updated.
-    """
-    available_models = (
-        ('team', 'Team'),
-        ('activity', 'Activity'),
-        ('comment', 'Comment'),
-        ('reply', 'Reply'),
-    )
-    action_choices = (
-        ('create', 'create'),
-        ('update', 'update'),
-        ('update', 'delete'),
-    )
-    model_name = models.CharField(choices=available_models, max_length=8)
-    model_id = models.IntegerField()
-    action = models.CharField(choices=action_choices, max_length=10)
-    updated_on = models.DateTimeField(auto_now_add=True)
-    remarks = models.TextField(null=Team, blank=True)
-    updated_by = models.ForeignKey(User)
-
-    def __unicode__(self):
-        return self.model_name + self.model_id
