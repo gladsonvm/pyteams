@@ -1,7 +1,6 @@
-import inspect
-
 from api.mappings.handler_mappings import handler_model_mappings
 from api.validators.validator import Validator
+import inspect
 
 
 class BaseHandler(object):
