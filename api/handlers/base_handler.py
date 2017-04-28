@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import permission_required as django_perm_req
 from api.mappings.handler_mappings import handler_model_mappings
 from api.validators.validator import Validator
 import inspect
@@ -10,10 +12,12 @@ class BaseHandler(object):
     BaseHandler and pass model to __init__() of BaseHandler.
     """
     # todo: implement permission decorators for every methods
-    def __init__(self, handle):
+    def __init__(self, handle, user):
         self.handle = handle
         self.model = handler_model_mappings.get(self.handle)
+        self.user = user
 
+    @django_perm_req('pyteam.add_team', raise_exception=True)
     def create(self, param_dict):
         Validator.validate(inspect.currentframe().f_code.co_name, param_dict)
         return self.model.objects.create(**param_dict)
