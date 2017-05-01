@@ -16,6 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from rest_api.views import RESTApi
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^$', RESTApi.as_view()),
+    url(r'(?P<handle>[-\w]+)/(?P<method>[-\w]+)/(?P<id>[-\w]+)/$', RESTApi.as_view(), name='handler'),
 ]
