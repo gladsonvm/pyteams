@@ -10,6 +10,7 @@ from django.utils.functional import wraps
 from guardian.compat import basestring
 from guardian.exceptions import GuardianError
 from guardian.utils import get_40x_or_None
+from guardian.shortcuts import get_objects_for_user
 
 
 def permission_required(perm, lookup_variables=None, **kwargs):
@@ -116,14 +117,21 @@ def permission_required(perm, lookup_variables=None, **kwargs):
                         raise GuardianError("Argument %s was not passed "
                                             "into view function" % view_arg)
                     lookup_dict[lookup] = kwargs[view_arg]
-                obj = get_object_or_404(model, **lookup_dict)
-                if obj:
-                    kwargs.update({'obj': obj})
-            response = get_40x_or_None(request.request, perms=[perm], obj=obj,
+                if 'id' in lookup_dict and lookup_dict['id'] == 'all':
+                    objects = [x for x in get_objects_for_user(request.request.user, 'pyteam.retrieve_team')]
+                else:
+                    obj = get_object_or_404(model, **lookup_dict)
+
+                    response = get_40x_or_None(request.request, perms=[perm], obj=obj,
                                        login_url=login_url, redirect_field_name=redirect_field_name,
                                        return_403=return_403, return_404=return_404, accept_global_perms=accept_global_perms)
-            if response:
-                return response
+
+                    if response:
+                        kwargs.update({'response': response})
+                    elif obj:
+                        objects = [obj]
+            if objects:
+                kwargs.update({'objects': objects})
             return view_func(request, *args, **kwargs)
         return wraps(view_func)(_wrapped_view)
     return decorator
