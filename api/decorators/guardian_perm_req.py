@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -9,9 +10,9 @@ from django.shortcuts import get_object_or_404
 from django.utils.functional import wraps
 from guardian.compat import basestring
 from guardian.exceptions import GuardianError
-from guardian.utils import get_40x_or_None
 from guardian.shortcuts import get_objects_for_user
-
+from guardian.utils import get_40x_or_None
+from api.mappings.permissions.raw_permissions import raw_perm_mappings
 
 def permission_required(perm, lookup_variables=None, **kwargs):
     """
@@ -118,7 +119,8 @@ def permission_required(perm, lookup_variables=None, **kwargs):
                                             "into view function" % view_arg)
                     lookup_dict[lookup] = kwargs[view_arg]
                 if 'id' in lookup_dict and lookup_dict['id'] == 'all':
-                    objects = [x for x in get_objects_for_user(request.request.user, 'pyteam.retrieve_team')]
+                    perm_string = raw_perm_mappings.get(kwargs.get('handle')).get(kwargs.get('method'))
+                    objects = [x for x in get_objects_for_user(request.request.user, perm_string)]
                 else:
                     obj = get_object_or_404(model, **lookup_dict)
 

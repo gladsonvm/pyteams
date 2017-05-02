@@ -1,6 +1,6 @@
 from django.views.generic import View
 from api.decorators.decorator_switch import check_perms_fetch_object
-from response_formatter.response import Response
+from response.response import Response
 from django.http import JsonResponse
 
 
