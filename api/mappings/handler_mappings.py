@@ -20,3 +20,7 @@ mappings = {
 handler_model_mappings = {
     'team': Team
 }
+
+handler_method_mappings = {
+    'team': ['get', 'create', 'update', 'delete']
+}
