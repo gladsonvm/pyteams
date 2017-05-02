@@ -1,7 +1,6 @@
 from django.views.generic import View
-from django.http import HttpResponse
 from api.decorators.decorator_switch import check_perms_fetch_object
-from response_formatter.response import Response
+from response.response import Response
 from django.http import JsonResponse
 
 
@@ -12,6 +11,9 @@ class RESTApi(View):
         get object from kwargs as check_perms_fetch_object update kwargs with respective object
         if permission check passes.
         """
-        response = Response(request, [kwargs.get('obj')])
-        return JsonResponse(response.get_formatted_response(), status=200)
+        if kwargs.get('response'):
+            return kwargs.get('response')
+        response = Response(request, kwargs.get('objects'))
+        json_dump_params = response.get_json_dump_param()
+        return JsonResponse(response.get_formatted_response(), json_dumps_params=json_dump_params, status=200)
 

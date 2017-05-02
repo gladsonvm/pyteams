@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import permission_required as django_perm_re
 from api.decorators.guardian_perm_req import permission_required as guardian_perm_req
 from pyteam.models import Team
 
-perm_mappings = {
+permission_decorator_mappings = {
     'handles': {
         'team': {
             'actions':  {

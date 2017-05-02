@@ -1,5 +1,3 @@
-from django.core import serializers
-import json
 import datetime
 
 
@@ -40,6 +38,7 @@ class Response(object):
         :param object: object
         :return: dict without key _state
         """
+
         serialized_object = obj.__dict__
         for key in serialized_object:
             serialized_object[key] = str(serialized_object[key])
@@ -50,5 +49,6 @@ class Response(object):
             del [serialized_object['_state']]
         return serialized_object
 
-
-
+    def get_json_dump_param(self):
+        json_dump_params = {'indent': 2} if self.request.GET.get('pretty') is not None else dict()
+        return json_dump_params
