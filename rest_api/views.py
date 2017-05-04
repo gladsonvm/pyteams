@@ -1,10 +1,11 @@
+from django.http import JsonResponse
 from django.views.generic import View
+from pyteam.mixins.validate_url_params import ValidateUrlParams
 from api.decorators.decorator_switch import check_perms_fetch_object
 from response.response import Response
-from django.http import JsonResponse
 
 
-class RESTApi(View):
+class RESTApi(ValidateUrlParams, View):
     @check_perms_fetch_object
     def get(self, request, **kwargs):
         """
