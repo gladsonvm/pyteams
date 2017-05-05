@@ -33,7 +33,7 @@ facilitate team management.
 
 
 ```
-                                       resp/data
+                                    3. resp/data
                             ______________________________
                            |                              |
                            |                              |
@@ -43,7 +43,7 @@ frontend --------> Django Views.py ---------> decorator ---
   |    val              |             kwargs
   |                     |
   |_____________________|
-         response/data
+     4.   response/data
 
 ```
 

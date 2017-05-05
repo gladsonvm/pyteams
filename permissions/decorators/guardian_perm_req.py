@@ -118,6 +118,7 @@ def permission_required(perm, lookup_variables=None, **kwargs):
                         raise GuardianError("Argument %s was not passed "
                                             "into view function" % view_arg)
                     lookup_dict[lookup] = kwargs[view_arg]
+                objects = [None]
                 if 'id' in lookup_dict and lookup_dict['id'] == 'all':
                     perm_string = raw_perm_mappings.get(kwargs.get('handle')).get(kwargs.get('method'))
                     objects = [x for x in get_objects_for_user(request.request.user, perm_string)]
@@ -132,7 +133,6 @@ def permission_required(perm, lookup_variables=None, **kwargs):
                         kwargs.update({'response': response})
                     elif obj:
                         objects = [obj]
-            if objects:
                 kwargs.update({'objects': objects})
             return view_func(request, *args, **kwargs)
         return wraps(view_func)(_wrapped_view)

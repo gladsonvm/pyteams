@@ -22,5 +22,6 @@ handler_model_mappings = {
 }
 
 handler_method_mappings = {
-    'team': ['get', 'create', 'update', 'delete']
+    'team': ['get', 'create', 'update', 'delete'],
+    'task': ['get', 'create', 'update', 'delete'],
 }

@@ -22,8 +22,9 @@ class Response(object):
         """
         object_list = list()
         response = dict()
-        for obj in self.data:
-            object_list.append(self.clean_object(obj))
+        if len(self.data):
+            for obj in self.data:
+                object_list.append(self.clean_object(obj))
         response['meta'] = {
             'resource_uri': self.request.get_full_path(),
             'total_objects': len(object_list),
