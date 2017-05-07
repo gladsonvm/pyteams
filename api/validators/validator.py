@@ -14,20 +14,22 @@ class Validator(object):
         :param param_dict: named args passed to method
         :return: True if validates else raise exception.
         """
-        validator_dict = validator_mappings.get(handler).get(method)
-        validated = False
-        for key, value in validator_dict.items():
-            for param, param_value in param_dict.items():
+        self.validator_dict = validator_mappings.get(handler).get(method)
+        self.validated = False
+        self.param_dict = param_dict
+
+    def validate(self):
+        for key, value in self.validator_dict.items():
+            for param, param_value in self.param_dict.items():
                 if key == param:
                     if type(value) is list:
                         if param_value in value:
-                            validated = True
+                            self.validated = True
                         else:
-                            validated = False
+                            self.validated = False
                     elif type(param_value) is value:
-                        validated = True
+                        self.validated = True
                     else:
-                        validated = False
-        if not validated:
-            raise Exception('Validation Failed.')
-        return True
+                        self.validated = False
+        return self.validated
+

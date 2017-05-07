@@ -1,11 +1,12 @@
 from django.http import JsonResponse
 from api.mappings.handler_mappings import handler_method_mappings
-
+from permissions.decorators.decorator_switch import check_perms_fetch_object
 
 class ValidateUrlParams(object):
     """
     validate params passed from url to views.
     """
+    @check_perms_fetch_object
     def dispatch(self, request, *args, **kwargs):
         if kwargs.get('handle') in handler_method_mappings.keys():
             if kwargs.get('method') in handler_method_mappings.get(kwargs.get('handle')):

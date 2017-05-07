@@ -23,6 +23,7 @@ class Response(object):
         object_list = list()
         response = dict()
         if len(self.data):
+            # append only if objects exists.
             for obj in self.data:
                 object_list.append(self.clean_object(obj))
         response['meta'] = {
