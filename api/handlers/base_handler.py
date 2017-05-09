@@ -43,7 +43,7 @@ class BaseHandler(object):
         self.model.objects.get(**identifiers).delete()
         return None
 
-    def execute(self, method):
+    def execute(self, method, identifires=None, param_dict=None):
         """
         execute() acts as entry point to all methods in BaseHandler other than init. execute() run method as per
         name specified by method parameter if validation passes.

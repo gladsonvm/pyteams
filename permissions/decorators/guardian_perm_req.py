@@ -14,6 +14,7 @@ from guardian.shortcuts import get_objects_for_user
 from guardian.utils import get_40x_or_None
 from api.mappings.permissions.raw_permissions import raw_perm_mappings
 
+
 def permission_required(perm, lookup_variables=None, **kwargs):
     """
     Decorator for views that checks whether a user has a particular permission

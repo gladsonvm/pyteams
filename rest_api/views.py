@@ -13,20 +13,18 @@ class RESTApi(ValidateUrlParams, View):
         get object from kwargs as check_perms_fetch_object update kwargs with respective object
         if permission check passes.
         """
-        print('\n view kwargs-->', kwargs)
-        if kwargs.get('response') is None:
-            response = Response(request, kwargs.get('objects'))
-            json_dump_params = response.get_json_dump_param()
-            return JsonResponse(response.get_formatted_response(), json_dumps_params=json_dump_params, status=200)
-        return kwargs.get('response')
+        response = Response(request, kwargs.get('objects'))
+        json_dump_params = response.get_json_dump_param()
+        return JsonResponse(response.get_formatted_response(), json_dumps_params=json_dump_params, status=200)
 
     def post(self, request, *args, **kwargs):
         """
         perform create operations after checking permissions.
         """
         handler = BaseHandler(kwargs.get('handle'))
-
-        pass
+        response = Response(request=request,
+                            data=[handler.execute(method='create', param_dict=request.POST.dict())])
+        return JsonResponse(response.get_formatted_response(), status=201)
 
     def patch(self, request, *args, **kwargs):
         """
