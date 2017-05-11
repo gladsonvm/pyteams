@@ -28,5 +28,6 @@ class ValidateUrlParams(object):
                     return handler(request, *args, **kwargs)
                 return JsonResponse({'error': 'method not found for given handler. '+msg}, status=404)
             return JsonResponse({'error': 'handler not found. '+msg}, status=404)
-        return JsonResponse({'error': kwargs.get('response').status_code})
-
+        if hasattr(kwargs.get('response'), 'status_code') and kwargs.get('response').status_code == 403:
+            return JsonResponse({'error': 'permission denied'}, status=403)
+        return kwargs.get('response')

@@ -59,7 +59,7 @@ through urls.
         eg: http://localhost:8000/team/get/1, http://localhost:8000/team/get/all
 
 * sample request
-    * url: http://localhost:8000/team/get/1
+    * url: http://localhost:8000/team/get/1?pretty
 
         response:
 ```
@@ -74,10 +74,10 @@ through urls.
                                           "created_on": "2017-04-30 07:05:29.074708+00:00",
                                           "id": "1"
                                         }
-                                    ],
+                               ],
                     "meta": {
-                        "total_objects": 1,
-                        "resource_uri": "/team/get/1/?pretty"
-                      }
+                                "total_objects": 1,
+                                "resource_uri": "/team/get/1/?pretty"
+                            }
                 }
 ```
