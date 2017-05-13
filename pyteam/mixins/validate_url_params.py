@@ -8,7 +8,7 @@ msg = 'hit /info?endpoint=/handler/method/&type=permissions to get ' \
       'a list of available handler-method mappings'
 
 
-class ValidateUrlParams(object):
+class ValidateRequestParams(object):
     """
     validate params passed from url to views.
     """
@@ -19,7 +19,6 @@ class ValidateUrlParams(object):
     @method_decorator(csrf_exempt)
     @check_perms_fetch_object
     def dispatch(self, request, *args, **kwargs):
-        print(kwargs)
         if kwargs.get('response') is None:
             if kwargs.get('handle') in handler_method_mappings.keys():
                 self.handle = kwargs.get('handle')

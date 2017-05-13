@@ -1,6 +1,9 @@
-from api.mappings.handler_mappings import handler_model_mappings
-from api.validators.validator import Validator
 import inspect
+from django.db.utils import IntegrityError
+from guardian.shortcuts import assign_perm
+from api.mappings.handler_mappings import handler_model_mappings
+from api.mappings.permissions.raw_permissions import raw_perm_mappings
+
 
 
 class BaseHandler(object):
@@ -23,7 +26,17 @@ class BaseHandler(object):
         :param param_dict: dict with keys/values to create an object
         :return: object
         """
-        return self.model.objects.create(**param_dict)
+        _response = dict()
+        try:
+            obj = self.model.objects.create(**param_dict)
+            perm_string = raw_perm_mappings.get(self.handle).get('get')
+            assign_perm(perm_string, param_dict.get('created_by'), obj) 
+        except IntegrityError:
+            _response.update({'success': False, 'error': 'object already exists', 'status_code': 409})
+        else:
+            _response.update({'success': True, 'data': [obj], 'status_code': 201})
+        finally:
+            return _response
 
     def update(self, identifiers, param_dict):
         """

@@ -7,10 +7,11 @@ class Response(object):
     call get_formatted_response by passing data as a list of objects, eg [obj,]
     Request meta data will be added to response json.
     """
-    def __init__(self, request, data):
+    def __init__(self, request, response):
         self.request = request
-        self.data = data
-        if not isinstance(data, list):
+        self.data = response.get('data')
+        self.response = response
+        if not isinstance(self.data, list):
             raise Exception('data must be a list of objects.')
 
     def get_formatted_response(self):
@@ -20,18 +21,20 @@ class Response(object):
         upon calling this method
         :return: dict with object list ad=nd meta info
         """
-        object_list = list()
-        response = dict()
-        if len(self.data):
-            # append only if objects exists.
-            for obj in self.data:
-                object_list.append(self.clean_object(obj))
-        response['meta'] = {
-            'resource_uri': self.request.get_full_path(),
-            'total_objects': len(object_list),
-        }
-        response['objects'] = object_list
-        return response
+        if self.response.get('success'):
+            object_list = list()
+            response = dict()
+            if len(self.data):
+                # append only if objects exists.
+                for obj in self.data:
+                    object_list.append(self.clean_object(obj))
+            response['meta'] = {
+                'resource_uri': self.request.get_full_path(),
+                'total_objects': len(object_list),
+            }
+            response['objects'] = object_list
+            self.response = response
+        return self.response
 
     def clean_object(self, obj):
         """
@@ -40,7 +43,6 @@ class Response(object):
         :param object: object
         :return: dict without key _state
         """
-
         serialized_object = obj.__dict__
         for key in serialized_object:
             serialized_object[key] = str(serialized_object[key])

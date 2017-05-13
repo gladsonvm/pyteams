@@ -22,6 +22,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^info', ApiInfo.as_view(), name='api_info'),
     url(r'^$', TeamApi.as_view(), name='team_api'),
-    url(r'(?P<handle>[-\w]+)/(?P<method>[-\w]+)/$', TeamApi.as_view(), name='handler'),
     url(r'(?P<handle>[-\w]+)/(?P<method>[-\w]+)/(?P<id>[-\w]+)/$', TeamApi.as_view(), name='handler'),
+    url(r'(?P<handle>[-\w]+)/(?P<method>[-\w]+)/$', TeamApi.as_view(), name='handler'),
 ]
