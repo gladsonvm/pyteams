@@ -57,3 +57,27 @@ through urls.
         returned by orm query. In that case recently updated 20 objects will be returned.
 
         eg: http://localhost:8000/team/get/1, http://localhost:8000/team/get/all
+
+* sample request
+    * url: http://localhost:8000/team/get/1?pretty
+
+        response:
+```
+                {
+                    "objects": [
+                                    {
+                                          "created_by_id": "2",
+                                          "description": "testing guardian perms",
+                                          "name": "guards",
+                                          "team_type": "management",
+                                          "updated_on": "2017-05-07 07:46:44.591273+00:00",
+                                          "created_on": "2017-04-30 07:05:29.074708+00:00",
+                                          "id": "1"
+                                        }
+                               ],
+                    "meta": {
+                                "total_objects": 1,
+                                "resource_uri": "/team/get/1/?pretty"
+                            }
+                }
+```
