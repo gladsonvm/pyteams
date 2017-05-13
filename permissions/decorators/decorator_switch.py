@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from api.mappings.permissions.permission_decorators import permission_decorator_mappings
 
 
@@ -11,10 +12,10 @@ def check_perms_fetch_object(func):
             if permission_decorator:
                 return permission_decorator(func)(instance, request, *args, **kwargs)
         if handle is None or permission_decorator is None:
-            kwargs.update({'response': {
+            kwargs.update({'response': JsonResponse({
                 'error': 'handler/method/method permission not found. hit '
                 'http://localhost:8000/info?endpoint=/handler/method/&type=permissions '
                          'to get a list of available handler-method permissions'
-            }})
+            }, status=404)})
             return func(instance, request, *args, **kwargs)
     return wrapper

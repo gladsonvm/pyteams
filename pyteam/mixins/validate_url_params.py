@@ -1,4 +1,6 @@
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from api.mappings.handler_mappings import handler_method_mappings
 from permissions.decorators.decorator_switch import check_perms_fetch_object
 
@@ -14,8 +16,10 @@ class ValidateUrlParams(object):
     handle = None
     method = None
 
+    @method_decorator(csrf_exempt)
     @check_perms_fetch_object
     def dispatch(self, request, *args, **kwargs):
+        print(kwargs)
         if kwargs.get('response') is None:
             if kwargs.get('handle') in handler_method_mappings.keys():
                 self.handle = kwargs.get('handle')

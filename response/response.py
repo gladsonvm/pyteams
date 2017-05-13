@@ -49,6 +49,9 @@ class Response(object):
         if '_state' in serialized_object:
             # remove django model state entry from serialized dict
             del [serialized_object['_state']]
+        if '_created_by_cache' in serialized_object:
+            # remove _created_by_cache
+            del [serialized_object['_created_by_cache']]
         return serialized_object
 
     def get_json_dump_param(self):

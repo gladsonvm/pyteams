@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'guardian',
     'pyteam',
+    'pyt_auth',
 ]
 
 MIDDLEWARE = [
@@ -49,11 +50,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'pyt_auth.middleware.token_auth.TokenAuthenticationMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
+    'pyt_auth.auth_backends.token_auth.TokenAuthentication',
 )
 
 ROOT_URLCONF = 'pyteams.urls'

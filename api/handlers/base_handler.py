@@ -52,5 +52,5 @@ class BaseHandler(object):
         """
         _method_map = dict()
         [_method_map.update({x[0]:x[1]}) for x in self.available_methods]
-        return _method_map.get(method)
+        return _method_map.get(method)(param_dict)
 

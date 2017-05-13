@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse
 from django.views.generic import View
 from pyteam.mixins.validate_url_params import ValidateUrlParams
@@ -6,7 +7,7 @@ from api.mappings.handler_mappings import handler_method_mappings
 from response.response import Response
 
 
-class RESTApi(ValidateUrlParams, View):
+class TeamApi(ValidateUrlParams, View):
 
     def get(self, request, **kwargs):
         """
@@ -21,9 +22,11 @@ class RESTApi(ValidateUrlParams, View):
         """
         perform create operations after checking permissions.
         """
+        post_dict = json.loads(request.body.decode('utf-8'))
+        post_dict.update({'created_by': request.user})
         handler = BaseHandler(kwargs.get('handle'))
         response = Response(request=request,
-                            data=[handler.execute(method='create', param_dict=request.POST.dict())])
+                            data=[handler.execute(method='create', param_dict=post_dict)])
         return JsonResponse(response.get_formatted_response(), status=201)
 
     def patch(self, request, *args, **kwargs):

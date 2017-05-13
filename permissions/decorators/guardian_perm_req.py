@@ -125,7 +125,6 @@ def permission_required(perm, lookup_variables=None, **kwargs):
                     objects = [x for x in get_objects_for_user(request.request.user, perm_string)]
                 else:
                     obj = get_object_or_404(model, **lookup_dict)
-
                     response = get_40x_or_None(request.request, perms=[perm], obj=obj,
                                        login_url=login_url, redirect_field_name=redirect_field_name,
                                        return_403=return_403, return_404=return_404, accept_global_perms=accept_global_perms)

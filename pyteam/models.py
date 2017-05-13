@@ -31,7 +31,7 @@ class Team(models.Model):
     members = models.ManyToManyField(User, blank=True, related_name='members')
     team_type = models.CharField(choices=team_types, max_length=10)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -59,7 +59,7 @@ class Task(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_created=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -93,7 +93,7 @@ class Activity(models.Model):
     priority = models.CharField(choices=priorities, max_length=6)
     status = models.CharField(choices=status_choices, max_length=10)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -104,7 +104,7 @@ class Comment(models.Model):
     updated_on = models.DateTimeField(auto_created=True)
     comment = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.comment
 
 
@@ -115,6 +115,6 @@ class Reply(models.Model):
     updated_on = models.DateTimeField(auto_created=True)
     reply = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.reply
 
