@@ -5,7 +5,6 @@ from api.mappings.handler_mappings import handler_model_mappings
 from api.mappings.permissions.raw_permissions import raw_perm_mappings
 
 
-
 class BaseHandler(object):
     """
     Base class which implements CRUD operations for handlers. This is a layer of abstraction over django model manager
@@ -29,11 +28,12 @@ class BaseHandler(object):
         _response = dict()
         try:
             obj = self.model.objects.create(**param_dict)
-            perm_string = raw_perm_mappings.get(self.handle).get('get')
-            assign_perm(perm_string, param_dict.get('created_by'), obj) 
         except IntegrityError:
             _response.update({'success': False, 'error': 'object already exists', 'status_code': 409})
         else:
+            # assign permissions to creators and managers
+            perm_string = raw_perm_mappings.get(self.handle).get('get')
+            assign_perm(perm_string, param_dict.get('created_by'), obj)
             _response.update({'success': True, 'data': [obj], 'status_code': 201})
         finally:
             return _response

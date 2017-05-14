@@ -1,9 +1,18 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.contrib.auth.models import User
-# Create your models here.
 
+
+def get_m2m_fields(instance):
+    """
+    This method return all m2m fields defined in a model
+    :param instance: Model object
+    :return: all m2m fields of a model object as a list of strings.
+    """
+    return [x for x in instance.__dict__ if not (x.startswith('_') or x.endswith('_') or x.endswith('_set')) and \
+            isinstance(getattr(instance, x), ManyToManyDescriptor)]
 
 class Team(models.Model):
     """
@@ -25,6 +34,7 @@ class Team(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.TextField()
+    # manager = models.ForeignKey(User, related_name='manager')
     created_by = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)

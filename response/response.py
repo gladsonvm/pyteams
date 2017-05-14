@@ -11,7 +11,7 @@ class Response(object):
         self.request = request
         self.data = response.get('data')
         self.response = response
-        if not isinstance(self.data, list):
+        if self.data and not isinstance(self.data, list):
             raise Exception('data must be a list of objects.')
 
     def get_formatted_response(self):
