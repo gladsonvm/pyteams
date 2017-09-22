@@ -6,7 +6,7 @@ import inspect
 class BaseHandler(object):
     """
     Base class which implements CRUD operations for handlers. This is a layer of abstraction over django model manager
-    which allows to create objects for the corresponding code with minimal code. A handler should implement from
+    which allows to create objects for a model with minimal code. A handler should implement from
     BaseHandler and pass model to __init__() of BaseHandler. Private methods are used to make sure methods are accessed
     through entry point only and note that adding an '_' before a var/method doesnt make it really private, also
     adding a '__' mangles python namespace besides, "we are all consenting adults here".

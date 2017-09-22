@@ -50,6 +50,18 @@ class Task(models.Model):
     """
     This model saves all info of tasks that are assigned within members of a team.
     """
+    priorities = (
+        (1, 'high'),
+        (2, 'medium'),
+        (3, 'low')
+    )
+    status_choices = (
+        (1, 'started'),
+        (2, 'progress'),
+        (3, 'finished'),
+        (4, 'terminated'),
+        (5, 'suspended')
+    )
     team = models.ForeignKey(Team)
     assignor = models.ForeignKey(User, related_name='assignor')
     assignee = models.ForeignKey(User, related_name='assignee')
@@ -92,6 +104,7 @@ class Activity(models.Model):
     team = models.ManyToManyField(Team)
     priority = models.CharField(choices=priorities, max_length=6)
     status = models.CharField(choices=status_choices, max_length=10)
+    task = models.ForeignKey(Task, null=True, blank=True)
 
     def __str__(self):
         return self.name
