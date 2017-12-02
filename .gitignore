@@ -16,6 +16,9 @@ tests/coverage_html/
 tests/.coverage
 build/
 tests/report/
-.idea
+.idea/
+.idea/*
 *.sqlite3
 migrations/
+pytenv/
+pytenv/*

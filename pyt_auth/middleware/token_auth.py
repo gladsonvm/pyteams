@@ -18,6 +18,8 @@ class TokenAuthenticationMiddleware(MiddlewareMixin):
                 return JsonResponse({'error': 'Token expired'}, status=401)
             except MalformedHeader:
                 return JsonResponse({'error': 'Malformed HTTP HEADER'}, status=400)
+        elif not request.user.is_authenticated:
+            return JsonResponse({'error': 'No auth token found in header'}, status=400)
         return None
 
     def extract_auth_token(self, auth_header):
