@@ -30,6 +30,7 @@ class Team(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     members = models.ManyToManyField(User, blank=True, related_name='members')
     team_type = models.CharField(choices=team_types, max_length=10)
+    last_updated_by = models.ForeignKey(User, related_name='last_updated_by')
 
     def __str__(self):
         return self.name

@@ -10,6 +10,7 @@ class Response(object):
     def __init__(self, request, data):
         self.request = request
         self.data = data
+        print('\n resp data-->', type(data), '<----\n')
         if not isinstance(data, list):
             raise Exception('data must be a list of objects.')
 
