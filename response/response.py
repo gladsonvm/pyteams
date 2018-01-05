@@ -7,10 +7,11 @@ class Response(object):
     call get_formatted_response by passing data as a list of objects, eg [obj,]
     Request meta data will be added to response json.
     """
+    django_model_fields = ['_last_updated_by_cache', '_created_by_cache', '_state']
+
     def __init__(self, request, data):
         self.request = request
         self.data = data
-        print('\n resp data-->', type(data), '<----\n')
         if not isinstance(data, list):
             raise Exception('data must be a list of objects.')
 
@@ -19,7 +20,7 @@ class Response(object):
         This method iterates over a list of objects, converts each one to json serialized entries
         and append the same to object_list. meta info for a request is also added to response
         upon calling this method
-        :return: dict with object list ad=nd meta info
+        :return: dict with object list and meta info
         """
         object_list = list()
         response = dict()
@@ -43,18 +44,20 @@ class Response(object):
         :param object: object
         :return: dict without key _state
         """
-
         serialized_object = obj.__dict__
         for key in serialized_object:
             serialized_object[key] = str(serialized_object[key])
             if isinstance(serialized_object[key], datetime.datetime):
                 serialized_object[key] = serialized_object[key].isoformat()
-        if '_state' in serialized_object:
-            # remove django model state entry from serialized dict
-            del [serialized_object['_state']]
-        if '_created_by_cache' in serialized_object:
-            # remove _created_by_cache
-            del [serialized_object['_created_by_cache']]
+        if hasattr(self, 'excluded_fields'):
+            self.excluded_fields += self.django_model_fields
+        else:
+            self.excluded_fields = self.django_model_fields
+        for field in self.excluded_fields:
+            if field in serialized_object or \
+                    (field.startswith('_') and field.endswith('_cache')):
+                # remove django model fields and cached fields from response
+                del [serialized_object[field]]
         return serialized_object
 
     def get_json_dump_param(self):
